@@ -22,3 +22,5 @@ To run the app in a  windows environment
  3. Clone/Download the files
  4. Run ```python path.py``` to start the application
 
+## Output
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/68152189/121096182-4f928880-c80f-11eb-84ce-966796293391.gif)
