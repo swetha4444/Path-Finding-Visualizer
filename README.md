@@ -1,5 +1,5 @@
 # Path Finding Visualizer
-This is visualization tool to visualize various path finding algorithms. There are various options to choose, like create a randomized maze. On pressing ```SPACE```, the code starts running.
+This is visualization tool to visualize various path finding algorithms. There are various options to choose, like create a randomized maze, choose an algorithim to visualize and choose the heuristic to calculate. On pressing ```SPACE```, the code starts running.
 
 ## Algorithms
 <ul>
