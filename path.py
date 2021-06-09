@@ -11,6 +11,7 @@ from cell import Cell
 #* -----------------------  Main Screen -----------------------
 screen = pygame.display.set_mode((600, 600))
 screen.fill((255, 255, 255))
+pygame.display.set_caption("Path Finding Algorithm Visualizer")
 
 
 #* -----------------------  Initialize Variables    -----------------------
@@ -18,10 +19,10 @@ cols = 50
 row = 50
 openSet = []
 closedSet = []
-purple = (128,0,128)
-teal = (173,216,230)
+purple = (52, 128, 235)
+teal = (112, 167, 196)
 blue = (0, 0, 255)
-black = (0, 0, 0)
+black = (83, 24, 99)
 w = 600 / cols
 h = 600 / row
 cameFrom = []
@@ -52,6 +53,7 @@ for i in range(0,row):
     grid[i][0].show(black, 0)
     grid[i][0].obs = True
     grid[i][row-1].obs = True
+
 
 #* -----------------------  Default Settings    -----------------------
 # Set start and end node
@@ -95,7 +97,7 @@ heur = StringVar(window)
 mazeType = StringVar(window)
 
 #List with options
-choices = [ 'A*','DFS','BFS' ]
+choices = [ 'A*','DFS','BFS', 'Greedy Search','UCS' ]
 h_choices = [ 'Euclidean', 'Manhattan']
 m_choices = [ 'Blank','Random' ]
 
@@ -113,7 +115,7 @@ hMenu = OptionMenu(window, heur, *h_choices, command=change_heuristic)
 
 #Algo Dropdown Menu
 def change_dropdown(*args):
-    global choices
+    global choices,option
     option = algoType.get()
     print( option )
 popupMenu = OptionMenu(window, algoType, *choices, command=change_dropdown)
@@ -145,6 +147,7 @@ Label(window, text="Press 'SPACE' to start.").grid(row=8, column=0, pady=3, padx
 showPath.grid(columnspan=2, row=9, pady=3)
 submit.grid(columnspan=2, row=10)
 
+
 #* -----------------------  Inititialize Menu and Start Game -----------------------
 window.update()
 mainloop()
@@ -156,12 +159,12 @@ openSet.append(start)
 if m_option == 'Random':
     for i in range(1,cols-1):
         for j in range(1,row-1):
-            if random.choice([1, 2, 3, 4]) == 2 and grid[i][j]!=start and grid[i][j]!=end :
+            if random.randint(1,5) == 3 and grid[i][j]!=start and grid[i][j]!=end :
                 grid[i][j].obs = True
                 grid[i][j].show(black, 0)
 
 #Block Nodes
-def mousePress(x):
+def mousePress(x): #! Doubt 
     t = x[0]
     w = x[1]
     g1 = t // (600 // cols)
@@ -184,12 +187,14 @@ while loop:
     for event in ev:
         if event.type == pygame.QUIT:
             pygame.quit()
-        if pygame.mouse.get_pressed()[0]:
+        # Draw blocks manually
+        if pygame.mouse.get_pressed()[0]: 
             try:
                 pos = pygame.mouse.get_pos()
                 mousePress(pos)
             except AttributeError:
                 pass
+        # Start Algorithm
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 loop = False
@@ -224,14 +229,14 @@ def a_star():
             print('done', current.f)
             start.show((50, 255, 50),0)
             temp = current.f
-            for i in range(round(current.f)):
+            while(current != start):
                 current.closed = False
-                current.show((0,0,255), 0)
+                current.show((224, 141, 199), 0)
                 current = current.previous
             end.show((255, 50, 50), 0)
 
             Tk().wm_withdraw()
-            result = messagebox.askokcancel('Program Finished', ('The program finished, the shortest distance/least weighted path \n is ' + str(temp) + '\n would you like to re run the program?'))
+            result = messagebox.askokcancel('A* Algorithm Completed', ('The shortest distance path \n is ' + str(temp)))
             if result == True:
                 os.execl(sys.executable,sys.executable, *sys.argv)
             else:
@@ -264,6 +269,123 @@ def a_star():
 
             neighbor.h = heurisitic(neighbor, end)
             neighbor.f = neighbor.g + neighbor.h
+
+            if neighbor.previous == None:
+                neighbor.previous = current
+        
+        if var.get() and current != start:
+            current.show(purple,0)
+        current.closed = True
+
+def UCS():
+    end.show((255, 50, 50), 0)
+    start.show((50, 255, 50), 0)
+    while len(openSet) > 0:
+        lowestIndex = 0
+        for i in range(len(openSet)):
+            if openSet[i].f < openSet[lowestIndex].f:
+                lowestIndex = i
+
+        current = openSet[lowestIndex]
+        if current == end:
+            print('done', current.f)
+            start.show((50, 255, 50),0)
+            temp = current.f
+            while(current != start):
+                current.closed = False
+                current.show((224, 141, 199), 0)
+                current = current.previous
+            end.show((255, 50, 50), 0)
+
+            Tk().wm_withdraw()
+            result = messagebox.askokcancel('A* Algorithm Completed', ('The shortest distance path \n is ' + str(temp)))
+            if result == True:
+                os.execl(sys.executable,sys.executable, *sys.argv)
+            else:
+                ag = True
+                while ag:
+                    ev = pygame.event.get()
+                    for event in ev:
+                        if event.type == pygame.KEYDOWN:
+                            ag = False
+
+                            break
+            pygame.quit()
+
+        openSet.pop(lowestIndex)
+        closedSet.append(current)
+
+        neighbors = current.neighbors
+        for i in range(len(neighbors)):
+            neighbor = neighbors[i]
+            if neighbor not in closedSet:
+                tempG = current.g + current.value
+                if neighbor in openSet:
+                    if neighbor.g > tempG:
+                        neighbor.g = tempG
+                else:
+                    neighbor.g = tempG
+                    openSet.append(neighbor)
+                    if var.get():
+                        neighbor.show(teal,0)
+
+            neighbor.f = neighbor.g
+
+            if neighbor.previous == None:
+                neighbor.previous = current
+        
+        if var.get() and current != start:
+            current.show(purple,0)
+        current.closed = True
+
+def greedyBFS():
+    end.show((255, 50, 50), 0)
+    start.show((50, 255, 50), 0)
+    while len(openSet) > 0:
+        lowestIndex = 0
+        # Priority Queue
+        for i in range(len(openSet)):
+            if openSet[i].f < openSet[lowestIndex].f:
+                lowestIndex = i
+
+        current = openSet[lowestIndex]
+        if current == end:
+            print('done', current.f)
+            start.show((50, 255, 50),0)
+            temp = current.f
+            while(current != start):
+                current.closed = False
+                current.show((224, 141, 199), 0)
+            end.show((255, 50, 50), 0)
+
+            Tk().wm_withdraw()
+            result = messagebox.askokcancel('Greedy Search Algorithm Completed', ('The shortest distance path \n is ' + str(temp)))
+            if result == True:
+                os.execl(sys.executable,sys.executable, *sys.argv)
+            else:
+                ag = True
+                while ag:
+                    ev = pygame.event.get()
+                    for event in ev:
+                        if event.type == pygame.KEYDOWN:
+                            ag = False
+
+                            break
+            pygame.quit()
+
+        openSet.pop(lowestIndex)
+        closedSet.append(current)
+
+        neighbors = current.neighbors
+        for i in range(len(neighbors)):
+            neighbor = neighbors[i]
+            if neighbor not in closedSet:
+                openSet.append(neighbor)
+                if var.get():
+                    neighbor.show(teal,0)
+
+            neighbor.h = heurisitic(neighbor, end)
+            neighbor.f = neighbor.h
 
             if neighbor.previous == None:
                 neighbor.previous = current
@@ -334,6 +456,7 @@ def bfs():
             print('done', current.f)
             start.show((50, 255, 50),0)
             temp = current.f
+            print("current f=",current.f)
             for i in range(round(current.f)):
                 current.closed = False
                 current.show((0,0,255), 0)
@@ -367,15 +490,16 @@ def bfs():
                 closedSet.append(neighbors[i])  
 
 def main():
-    print( option )
-    print( m_option )
     if option == 'A*':
-        print( h_option )
         a_star()
     elif option == 'DFS':
         dfs()
     elif option == 'BFS':
         bfs()
+    elif option == 'Greedy Search':
+        greedyBFS()
+    elif option == 'UCS':
+        UCS()
 
 while True:
     ev = pygame.event.poll()
@@ -383,4 +507,3 @@ while True:
         pygame.quit()
     pygame.display.update()
     main()
-
