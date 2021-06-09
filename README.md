@@ -3,16 +3,19 @@ This is visualization tool to visualize various path finding algorithms. There a
 
 ## Algorithms
 <ul>
-    <li>A* Search</li>
+    <li> A* Search </li>
     <li> Breadth First Search</li>
     <li> Depth First Search</li>
+    <li> Greedy Search </li>
+    <li> Uniform Cost Search </li>
+    <li> Bi-Directional Search </li>
 </ul>
 
 ## Requirements
 <ol>
-    <li>Python 3</li>
-    <li>TKinter</li>
-    <li>Pygame</li>
+    <li> Python 3 </li>
+    <li> TKinter </li>
+    <li> Pygame </li>
 </ol>
 
 ## Installation
