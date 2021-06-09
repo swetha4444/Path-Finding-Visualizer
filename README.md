@@ -17,7 +17,7 @@ This is visualization tool to visualize various path finding algorithms. There a
     <li> TKinter </li>
     <li> Pygame </li>
 </ol>
-## I am stupid .
+
 ## Installation
 To run the app in a  windows environment
  1. Install python 3.8
