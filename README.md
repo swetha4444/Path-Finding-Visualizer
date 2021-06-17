@@ -8,7 +8,6 @@ This is visualization tool to visualize various path finding algorithms. There a
     <li> Depth First Search</li>
     <li> Greedy Search </li>
     <li> Uniform Cost Search </li>
-    <li> Bi-Directional Search </li>
 </ul>
 
 ## Requirements
